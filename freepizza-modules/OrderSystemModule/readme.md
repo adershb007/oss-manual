@@ -30,8 +30,10 @@ The module must be able to communicate with a suitable inventory management syst
    5. Checkout
       1. Validate Cart (Availability & Remaning stock)
 2. Wishlist
-   1. Add to Wishlist
-   2. Remove Items
+   1. Create wishlist (using a popover component)
+   2. Add to Wishlist (already created)
+   3. Remove Items from wishlist
+   4. Delete wishlist
 3. Order System
    1. Create Order from Cart
    2. Create Order Manually (using Product / Service)
@@ -65,11 +67,18 @@ FreePizza modules are developed to be used with Ark Framework
 
 #### User Flow
 
-> Empty
+> N/A
 
-#### Module State (Redux)
+#### @types
 
 ```typescript
+type Cart = {
+  _id: string
+  userId?: string
+  createdAt: Date
+  // Any cart specific information goes here
+}
+
 type CartItem = {
   _id: string
   itemType: 'cart' | 'wishlist'
@@ -130,9 +139,24 @@ type Order = {
   createdAt: string
 }
 
-type State = {
+type WishlistItem = {
+  _id: string
+  wishlistId: string
+  userId: string
+  product: product
+  variantId: string
+  createdAt: Date
+}
+
+type Wishlist = {
+  _id: string
+  name: string
+  items: Array<WishlistItem>
+}
+
+type ReduxState = {
   items: Array<CartItem>
-  wishlistItems: Array<CartItem>
+  wishlist: Array<Wishlist>
   orders: Array<Order>
   itemsPerLoad: number
 }
@@ -152,13 +176,19 @@ type State = {
 
 4. Checkout.View
 
+   1. Step based navigation (within a single route / url)
+
 #### Controller Specification
 
 ```typescript
 type Controller = {
-  addToCart: (type: 'cart' | 'wishlist', itemPayload: CartItem) => void
-  updateCartQuantity: (cartId: number, cartId: number, quantity: number)
+  addToCart: (items: Array<CartItem>) => void
+  refreshCart: (cartId: string) => void
+  updateCartQuantity: (cartId: number, productId: number, variantId: number, quantity: number)
+	fetchAllWishlist: () => void
+  fetchWishlistById: (wishlistId: string) => void
   removeItem: (type: 'cart' | 'wishlist', cartId: number)
+  addToWishlist: () => void
 	fetchOrders: (count: number) // count arg defaults to the one in state (itemsPerLoad)
 }
 ```
@@ -167,14 +197,50 @@ type Controller = {
 
 #### Reducer Specification
 
-> Empty
+> N/A
 
 
 
 #### Service Specification (Declaration Map)
 
 ```typescript
-
+type Service = {
+  // If cartId is not provided, it defaults to null. The system will detect default cart based on logged in user
+  fetchCart: (cartId?: string) => {
+    cart: Cart
+    items: Array<CartItem>
+  }
+  refreshCart: (id: string = null, force: boolean = true)
+  addToCart: (items: Array<CartItem>, 
+              cartId?: string) => {
+    message: 'success' | 'failure'
+    cart: Cart
+    addedItems: Array<CartItem>
+  }
+  updateCartQuantity: (cartId: string, 
+                       productId: number,
+                       variantId: number, 
+                       quantity: number) => {
+    status: 'success' | 'failure'
+    message?: string
+  }
+  removeItem: (itemId: string, cartId: string) => {
+    status: 'success' | 'failure'
+    message?: string
+  }
+  clearAllItems: (cartId: string) => {
+    status: 'success' | 'failure'
+    message?: string
+  }
+  // Loads all wishlist (without items)
+  fetchWishlists: () => Array<Wishlist>
+  refreshWishlist: (id: string, force: boolean = false)
+  addToWishlist: (wishlistId: string, productId: string, variantId: string)
+  removeFromWishlist: (wishlistId: string, productId: string, variantId: string)
+  deleteWishlist: (wishlistId: string)
+  // Get names and ids for wishlist that a certain product->variant is member of
+  getWishlistByProduct: (productId: string, variantId: string)
+}
 ```
 
 
