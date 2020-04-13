@@ -178,18 +178,34 @@ type ReduxState = {
 
    1. Step based navigation (within a single route / url)
 
+#### Components
+
+1. Wishlist Picker Popover Component
+
+   A popover component has to be developed that should render like a tooltip when user clicks to '**Add to Wishlist**' button.
+
+   The popover should display all created wishlist and option to create new one without leaving the page right from the popover.
+
+   User must be able to add a product to multiple wishlist from the same popover.
+
 #### Controller Specification
 
 ```typescript
 type Controller = {
-  addToCart: (items: Array<CartItem>) => void
-  refreshCart: (cartId: string) => void
-  updateCartQuantity: (cartId: number, productId: number, variantId: number, quantity: number)
+  addToCart: (items: Array<CartItem>, cartId? string) => void
+  refreshCart: (cartId?: string) => void
+  updateCartQuantity: (
+    productId: number, 
+    variantId: number, 
+    quantity: number,
+  	cartId: number
+  ) => void
+	removeItemFromCart: (itemId: string, cartId?: string) => void
 	fetchAllWishlist: () => void
-  fetchWishlistById: (wishlistId: string) => void
-  removeItem: (type: 'cart' | 'wishlist', cartId: number)
-  addToWishlist: () => void
-	fetchOrders: (count: number) // count arg defaults to the one in state (itemsPerLoad)
+  refreshWishlist: (wishlistId: string, force: boolean = false) => void
+  removeItemFromWishlist: (wishlistId: number, itemId: string) => void
+  addToWishlist: (wishlistId: number, productId: string, variantId: string) => void
+	fetchOrders: (count: number) => void // count arg defaults to the one in state (itemsPerLoad)
 }
 ```
 
@@ -234,12 +250,30 @@ type Service = {
   }
   // Loads all wishlist (without items)
   fetchWishlists: () => Array<Wishlist>
-  refreshWishlist: (id: string, force: boolean = false)
-  addToWishlist: (wishlistId: string, productId: string, variantId: string)
-  removeFromWishlist: (wishlistId: string, productId: string, variantId: string)
-  deleteWishlist: (wishlistId: string)
+  fetchWishlistItem: (id: string) => Array<WishlistItem>
+  addToWishlist: (wishlistId: string, productId: string, variantId: string) => {
+    status: 'success' | 'failure'
+    message?: string
+  }
+  removeFromWishlist: (wishlistId: string, productId: string, variantId: string) => {
+    status: 'success' | 'failure'
+    message?: string
+  }
+  deleteWishlist: (wishlistId: string) => {
+    status: 'success' | 'failure'
+    message?: string
+  }
   // Get names and ids for wishlist that a certain product->variant is member of
-  getWishlistByProduct: (productId: string, variantId: string)
+  getWishlistByProduct: (
+    productId: string, 
+    variantId: string) => Array<Wishlist> // Array of Wishlist without items
+    
+  getOrders: () => {
+    skip: number
+    offset: number
+    items: Array<Order>
+    estimatedCount: number
+  }
 }
 ```
 
