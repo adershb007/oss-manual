@@ -97,25 +97,33 @@ Views are React Components that act as a individual pages mapped to a URL route.
    - Sign In using Email and Password
    - Social Provider Button Functions
    - Register using Email and Password
-
-2. **Account.View ** *(Functions)*
-
-   - Update User Info
+2. **Account.View** *(Functions)*
+- Update User Info
    - Upload Profile Picture
    - Change Password (with Old Password)
-
 3. **AccountRecovery.View** *(Functions)*
-
-   - Find Account by Email Address
+- Find Account by Email Address
    - Initiate Recovery
    - Validate OTP
    - Reset Password
-
 4. **AccountSetup.View** *(Functions)*
 
    - Update User Info
 
-   
+
+
+
+#### External Service Integration
+
+##### Google Sign In
+
+Instruction for Javascript (browser): https://developers.google.com/identity/sign-in/web/sign-in
+
+##### Facebook Sign In
+
+Instruction for Javascript (browser): https://developers.facebook.com/docs/facebook-login/web
+
+
 
 #### Controller Specification
 
@@ -153,10 +161,13 @@ type Service = {
   	}
   }
   finishSocialAuthentication: (token: string) => {
-    type: string
-    emailAddress: string
-    requireSetup: boolean
-    // other user related information can come here
+    token: string
+    userInfo: {
+    	type: string
+    	emailAddress: string
+      requireSetup: boolean
+    	// other user related information can come here
+  	}
   }
   
   // Account.View | AccountSetup.View
