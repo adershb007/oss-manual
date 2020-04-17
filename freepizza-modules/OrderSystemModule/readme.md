@@ -248,6 +248,10 @@ type Service = {
     status: 'success' | 'failure'
     message?: string
   }
+  validateCart: (cartId: string) => {
+    status: 'success' | 'failure'
+    message?: string
+  }
   // Loads all wishlist (without items)
   fetchWishlists: () => Array<Wishlist>
   fetchWishlistItem: (id: string) => Array<WishlistItem>
@@ -267,7 +271,7 @@ type Service = {
   getWishlistByProduct: (
     productId: string, 
     variantId: string) => Array<Wishlist> // Array of Wishlist without items
-    
+  createOrder: (items: Array<CartItem>) => Order
   getOrders: () => {
     skip: number
     offset: number
