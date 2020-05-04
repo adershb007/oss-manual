@@ -159,6 +159,7 @@ type ReduxState = {
   wishlist: Array<Wishlist>
   orders: Array<Order>
   itemsPerLoad: number
+  estimatedCount: number
 }
 ```
 
@@ -202,6 +203,8 @@ type Controller = {
   ) => void
 	removeItemFromCart: (itemId: string, cartId?: string) => void
 	fetchAllWishlist: () => void
+	createWishlist: (wishlist: Wishlist) => void
+	clearAllItems: (cartId: string) => void
   refreshWishlist: (wishlistId: string, force: boolean = false) => void
   removeItemFromWishlist: (wishlistId: number, itemId: string) => void
   addToWishlist: (wishlistId: number, productId: string, variantId: string) => void
@@ -259,6 +262,9 @@ type Service = {
     status: 'success' | 'failure'
     message?: string
   }
+  createWishlist: (name: string) => {
+   wishlist: Wishlist
+  }
   removeFromWishlist: (wishlistId: string, productId: string, variantId: string) => {
     status: 'success' | 'failure'
     message?: string
@@ -278,7 +284,13 @@ type Service = {
     items: Array<Order>
     estimatedCount: number
   }
-}
+  createOrder: (order: Order) => {
+    status: 'success' | 'failure'
+    message?: string
+  }
+  getAddress: (userId: string) => {
+    address: Array<Address>
+  }
 ```
 
 
